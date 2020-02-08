@@ -46,7 +46,7 @@ const Calendar = () => {
 			{numOfDaysArray.map((day, i) => {
 				return (
 				<Day key={`Day ${i}`}>
-					<h3>{i + 1}</h3>
+					<h3>Day {i + 1}</h3>
 						{RoomCalculator(i).map((room, j) => (
 						<Room key={`Day ${i} Room ${j}`}>Room {room}</Room>
 						))}
