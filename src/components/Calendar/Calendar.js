@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { RoomCalculator } from '../../utils/RoomCalculator'
+import { RoomCalculator, RoomCheck } from '../../utils/RoomCalculator'
 
-const Week = styled.div`
+const Cal = styled.div`
 	display: flex;
 	flex-wrap: wrap;
 `;
@@ -18,28 +18,41 @@ const Room = styled.p`
 
 const Calendar = () => {
 	const numOfRooms = 25;
-	const numOfRoomsArray = () => Array.from(Array(numOfRooms).keys());
-	const numOfDays = 14;
+	const numOfRoomsArray = Array.from(Array(numOfRooms + 1).keys());
+	const numOfDays = 7;
 	const numOfDaysArray = Array.from(Array(numOfDays).keys());
-	const [uncheckedRooms, updateRooms] = useState(numOfRoomsArray());
+	const [uncheckedRooms, updateRooms] = useState(numOfRoomsArray);
 
-	const roomCheck = () => {
-		if (uncheckedRooms <= 3) updateRooms(numOfRoomsArray());
-	}
-	
+	const RoomCalculator = (i) => {
+		if (uncheckedRooms.length <= 3 || numOfDays === i + 1) {
+			const allRooms = uncheckedRooms.splice(1, 25);
+			uncheckedRooms.pop();
+			// updateRooms(numOfRoomsArray);
+			return allRooms
+		}
+		const randomNumber = (num) => Math.floor(Math.random() * num + 1);
+		const numOfChecks = randomNumber(6);
+		return uncheckedRooms.reduce((acc, _, i) => {
+			if (i < numOfChecks) {
+				const removedNum = uncheckedRooms.splice(randomNumber(uncheckedRooms.length - 1), 1)[0];
+				if (removedNum) acc.push(removedNum);
+			}
+			return acc
+		}, []);
+	};
+
 	return (
-		<Week>
+		<Cal>
 			{numOfDaysArray.map((day, i) => {
-				roomCheck();
 				return (
 				<Day key={`Day ${i}`}>
 					<h3>{i + 1}</h3>
-					{RoomCalculator(uncheckedRooms, numOfRooms, numOfDays).map((room) => (
-						<Room>Room {room}</Room>
-					))}
+						{RoomCalculator(i).map((room, j) => (
+						<Room key={`Day ${i} Room ${j}`}>Room {room}</Room>
+						))}
 				</Day>
 			)})}
-		</Week>
+		</Cal>
 		);
 };
 
