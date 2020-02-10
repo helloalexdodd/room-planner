@@ -39,6 +39,7 @@ const Calendar = () => {
 	const numOfDaysArray = Array.from(Array(numOfDays).keys());
 	const [numOfChecks, setNumOfChecks] = useState(null);
 	const [isDisabled, changeIsDisabled] = useState(false);
+	const [inputValue, setInputValue] = useState('');
 	const randomNumber = (num) => Math.floor(Math.random() * num);
 
 	const RoomCheck = (dailyChecks) => {
@@ -52,14 +53,17 @@ const Calendar = () => {
 			for (let i = 0; i < numOfChecks; i++) {
 				const rand = randomNumber(uncheckedRooms.length)
 				const removedNum = uncheckedRooms.splice(rand, 1)[0];
-				dailyChecks.push(removedNum);
+				if (dailyChecks.includes(removedNum)) {
+					uncheckedRooms.push(removedNum);
+				} else {
+					dailyChecks.push(removedNum);
+				}
 				if (dailyChecks.length === numOfChecks) return;
 			}
 		}
 	};
 
 	const RoomCalculator = (i) => {
-		console.log('Day', i + 1)
 		const dailyChecks = [];
 		if (uncheckedRooms.length <= numOfChecks) {
 			for (let i = 0; i < numOfChecks; i++) {
@@ -80,7 +84,7 @@ const Calendar = () => {
 		const input = Number(e.target.value)
 		if (!input && e.target.value !== '') {
 			alert('value must be a number')
-			e.target.value = '';
+			setInputValue('');
 		}
 		setNumOfChecks(input)
 		for (let i = input; i < 100; i++) { 
@@ -92,11 +96,30 @@ const Calendar = () => {
 		}
 	};
 
+	const handleOnSubmit = (e) => {
+		e.preventDefault();
+		uncheckedRooms = [...roomsArray]
+		setNumOfDays(null);
+		setNumOfChecks(null);
+		changeIsDisabled(!isDisabled);
+		setInputValue('');
+	}
+
 	return (
 		<>
 			<h1>Room Check Planner</h1>
-			<Label htmlFor="numOfChecks">How many rooms per day would you like to schedule?</Label>
-			<input id="numOfChecks" onChange={(e)=> handleChecksOnChange(e)} placeholder="3" disabled={isDisabled}></input>
+			<form onSubmit={(e) => handleOnSubmit(e)}>
+				<Label htmlFor="numOfChecks">How many rooms per day would you like to schedule?</Label>
+				<input
+					id="numOfChecks"
+					onChange={(e)=> handleChecksOnChange(e)}
+					placeholder="3"
+					disabled={isDisabled}
+					value={inputValue}
+					autoFocus
+				></input>
+				<input type="submit" value="Reset"/>
+			</form>
 			<Cal>
 				{numOfChecks && numOfDays &&
 				numOfDaysArray.map((day, i) => {
